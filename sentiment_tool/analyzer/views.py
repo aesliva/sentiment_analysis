@@ -11,5 +11,9 @@ def analyze(request):
         user_text = request.GET.get("feedback")
         if user_text:
             sentiment = predict_sentiment(user_text)
-            return JsonResponse({"sentiment": "positive" if sentiment[0] == 1 else "negative"})
+            response = {
+                "feedback": user_text,
+                "sentiment": "positive" if sentiment[0] == 1 else "negative"
+            }
+            return JsonResponse(response)
         return JsonResponse({"error": "No feedback provided"}, status=400)
