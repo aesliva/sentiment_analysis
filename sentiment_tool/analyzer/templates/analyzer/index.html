@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis Tool</title>
+    <title>Aspect-Based Sentiment Analysis Tool</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-    <h1>Sentiment Analysis Tool</h1>
+    <h1>Aspect-Based Sentiment Analysis Tool</h1>
     <form id="sentiment-form">
         <textarea id="feedback" rows="4" cols="50" placeholder="Enter your feedback here"></textarea>
         <br>
@@ -21,10 +35,29 @@
             fetch(`/sentiment/analyze/?feedback=${encodeURIComponent(feedback)}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').innerHTML = `
-                        Sentiment Score: ${data.sentiment_score}<br>
-                        Sentiment: ${data.sentiment}
+                    let resultHtml = `
+                        <h2>Overall Sentiment</h2>
+                        <p>Score: ${data.overall_score}<br>
+                        Sentiment: ${data.overall_sentiment}</p>
+                        <h2>Aspect-Based Sentiment</h2>
+                        <table>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Score</th>
+                                <th>Sentiment</th>
+                            </tr>
                     `;
+                    for (const [aspect, score] of Object.entries(data.aspect_scores)) {
+                        resultHtml += `
+                            <tr>
+                                <td>${aspect}</td>
+                                <td>${score}</td>
+                                <td>${data.aspect_sentiments[aspect]}</td>
+                            </tr>
+                        `;
+                    }
+                    resultHtml += '</table>';
+                    document.getElementById('result').innerHTML = resultHtml;
                 })
                 .catch(error => {
                     console.error('Error:', error);
