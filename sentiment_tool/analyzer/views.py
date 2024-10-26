@@ -17,3 +17,6 @@ def analyze(request):
             }
             return JsonResponse(response)
         return JsonResponse({"error": "No feedback provided"}, status=400)
+
+def index(request):
+    return render(request, 'analyzer/index.html')

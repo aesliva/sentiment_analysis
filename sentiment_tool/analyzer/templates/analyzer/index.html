@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Tool</title>
+</head>
+<body>
+    <h1>Sentiment Analysis Tool</h1>
+    <form id="sentiment-form">
+        <textarea id="feedback" rows="4" cols="50" placeholder="Enter your feedback here"></textarea>
+        <br>
+        <button type="submit">Analyze Sentiment</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('sentiment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('feedback').value;
+            fetch(`/sentiment/analyze/?feedback=${encodeURIComponent(feedback)}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerHTML = `Sentiment: ${data.sentiment}`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML = 'An error occurred while analyzing the sentiment.';
+                });
+        });
+    </script>
+</body>
+</html>
