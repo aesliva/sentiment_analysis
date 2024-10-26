@@ -1,17 +1,26 @@
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 vectorizer = CountVectorizer()
-classifier = MultinomialNB()
+regressor = LinearRegression()
 
-# Placeholder function to train a basic model on some sample data
+# TODO: We're re-training the model every time we run the program, use joblib to save the model and load it
+# TODO: Improve training data
+# Function to train a basic model on sample data
 def train():
-    sample_texts = ["I love this game!", "This game is terrible.", "It's okay."]
-    sample_labels = [1, 0, 1]
+    sample_texts = [
+        "I absolutely hate this!", "This is terrible.", "I dislike it.",
+        "It's not great.", "It's okay.", "Not bad.",
+        "I like it.", "This is good.", "I love this!", "This is amazing!"
+    ]
+    sample_scores = [-1.0, -0.8, -0.6, -0.3, 0.0, 0.2, 0.5, 0.7, 0.9, 1.0]
+    
     vectors = vectorizer.fit_transform(sample_texts)
-    classifier.fit(vectors, sample_labels)
+    regressor.fit(vectors.toarray(), sample_scores)
 
-# Function to predict sentiment of new text
+# Function to predict sentiment score of new text
 def predict_sentiment(text):
     vector = vectorizer.transform([text])
-    return classifier.predict(vector)
+    score = regressor.predict(vector.toarray())[0]
+    return max(min(score, 1.0), -1.0)  # Ensure the score is between -1 and 1

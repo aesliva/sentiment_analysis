@@ -21,7 +21,10 @@
             fetch(`/sentiment/analyze/?feedback=${encodeURIComponent(feedback)}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('result').innerHTML = `Sentiment: ${data.sentiment}`;
+                    document.getElementById('result').innerHTML = `
+                        Sentiment Score: ${data.sentiment_score}<br>
+                        Sentiment: ${data.sentiment}
+                    `;
                 })
                 .catch(error => {
                     console.error('Error:', error);
