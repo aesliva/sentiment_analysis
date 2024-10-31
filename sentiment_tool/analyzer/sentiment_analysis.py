@@ -5,6 +5,7 @@ import re
 
 vectorizer = CountVectorizer()
 regressors = {aspect: LinearRegression() for aspect in ['graphics', 'music', 'terrain', 'combat', 'gameplay']}
+overall_regressor = LinearRegression()
 
 aspects = ['graphics', 'music', 'terrain', 'combat', 'gameplay']
 
@@ -35,11 +36,16 @@ def train():
         {'graphics': 0.0, 'music': 0.0, 'terrain': -0.5, 'combat': 0.0, 'gameplay': 0.8},
     ]
     
+    # Overall sentiment scores
+    overall_scores = [0.3, 0.0, 0.6, -0.2, 0.3]
+    
     vectors = vectorizer.fit_transform(sample_texts)
     
     for aspect in aspects:
         aspect_scores = [score[aspect] for score in sample_scores]
         regressors[aspect].fit(vectors.toarray(), aspect_scores)
+
+    overall_regressor.fit(vectors.toarray(), overall_scores)
 
 # Function to check if a text contains keywords related toaspect
 def contains_aspect_keywords(text, aspect):
@@ -61,11 +67,8 @@ def predict_sentiment(text):
             
     return scores
 
-#TODO: change how we calculate overall sentiment
-# Function to get overall sentiment
-def get_overall_sentiment(scores):
-    # Only consider non-zero scores in the average
-    non_zero_scores = [score for score in scores.values() if score != 0]
-    if not non_zero_scores:
-        return 0.0
-    return sum(non_zero_scores) / len(non_zero_scores)
+def get_overall_sentiment(text):
+    """Calculate overall sentiment using ML prediction"""
+    vector = vectorizer.transform([text])
+    score = overall_regressor.predict(vector.toarray())[0]
+    return max(min(score, 1.0), -1.0)

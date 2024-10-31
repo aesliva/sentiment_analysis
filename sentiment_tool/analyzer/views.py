@@ -11,7 +11,7 @@ def analyze(request):
         user_text = request.GET.get("feedback")
         if user_text:
             sentiment_scores = predict_sentiment(user_text)
-            overall_score = get_overall_sentiment(sentiment_scores)
+            overall_score = get_overall_sentiment(user_text)
             response = {
                 "feedback": user_text,
                 "overall_score": round(overall_score, 2),
