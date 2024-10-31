@@ -1,12 +1,23 @@
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LinearRegression
 import numpy as np
+import re
 
 vectorizer = CountVectorizer()
 regressors = {aspect: LinearRegression() for aspect in ['graphics', 'music', 'terrain', 'combat', 'gameplay']}
 
 aspects = ['graphics', 'music', 'terrain', 'combat', 'gameplay']
 
+# Dictionary of keywords associated with each aspect
+aspect_keywords = {
+    'graphics': ['graphics', 'visual', 'look', 'texture', 'vibe', 'aesthetic', 'shader'],
+    'music': ['music', 'sound', 'audio', 'soundtrack', 'song', 'ost'],
+    'terrain': ['terrain', 'landscape', 'map', 'world', 'environment', 'scenery', 'generation', 'region', 'biome'],
+    'combat': ['combat', 'enemy', 'difficulty', 'boss', 'mob'],
+    'gameplay': ['gameplay', 'mechanic', 'control', 'feature', 'system']
+}
+
+#TODO: need more sample data
 # Function to train a basic model on sample data
 def train():
     sample_texts = [
@@ -30,15 +41,31 @@ def train():
         aspect_scores = [score[aspect] for score in sample_scores]
         regressors[aspect].fit(vectors.toarray(), aspect_scores)
 
+# Function to check if a text contains keywords related toaspect
+def contains_aspect_keywords(text, aspect):
+    text = text.lower()
+    return any(keyword in text for keyword in aspect_keywords[aspect])
+
 # Function to predict sentiment scores for all aspects
 def predict_sentiment(text):
     vector = vectorizer.transform([text])
     scores = {}
+    
     for aspect in aspects:
-        score = regressors[aspect].predict(vector.toarray())[0]
-        scores[aspect] = max(min(score, 1.0), -1.0)  # Ensure the score is between -1 and 1
+        # Only predict sentiment if aspect / related keywords mentioned
+        if contains_aspect_keywords(text, aspect):
+            score = regressors[aspect].predict(vector.toarray())[0]
+            scores[aspect] = max(min(score, 1.0), -1.0)
+        else:
+            scores[aspect] = 0.0  # 0 if not mentioned
+            
     return scores
 
+#TODO: change how we calculate overall sentiment
 # Function to get overall sentiment
 def get_overall_sentiment(scores):
-    return sum(scores.values()) / len(scores)
+    # Only consider non-zero scores in the average
+    non_zero_scores = [score for score in scores.values() if score != 0]
+    if not non_zero_scores:
+        return 0.0
+    return sum(non_zero_scores) / len(non_zero_scores)
