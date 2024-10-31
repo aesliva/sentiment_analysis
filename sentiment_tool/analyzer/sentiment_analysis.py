@@ -1,3 +1,11 @@
+"""
+Sentiment Analysis Module
+
+Provides functionality for analyzing sentiment in text feedback
+across multiple aspects of game reviews (graphics, music, terrain, combat, gameplay, etc).
+Uses scikit-learn's LinearRegression for sentiment prediction.
+"""
+
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LinearRegression
 import numpy as np
@@ -19,7 +27,7 @@ aspect_keywords = {
 }
 
 #TODO: need more sample data
-# Function to train a basic model on sample data
+# Train the model using sample data. Map sample_scores and overall_scores to sample_texts for training data
 def train():
     sample_texts = [
         "The graphics are stunning but the combat is lacking.",
@@ -67,8 +75,8 @@ def predict_sentiment(text):
             
     return scores
 
+# Get overall sentiment using ML prediction
 def get_overall_sentiment(text):
-    """Calculate overall sentiment using ML prediction"""
     vector = vectorizer.transform([text])
     score = overall_regressor.predict(vector.toarray())[0]
     return max(min(score, 1.0), -1.0)
