@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .sentiment_analysis import predict_sentiment, train, get_overall_sentiment, aspects
 
-# train the model separately and save it
+# TODO: train the model separately and save it
 train()
 
 def analyze(request):
