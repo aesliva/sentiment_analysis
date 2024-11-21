@@ -2,12 +2,16 @@ version: "3.8"
 
 services:
   backend:
-    build: ./sentiment_tool
+    build:
+      context: ./sentiment_tool
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=0
-      - DJANGO_ALLOWED_HOSTS=localhost,backend
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT}
     volumes:
       - ./sentiment_tool:/app
 
