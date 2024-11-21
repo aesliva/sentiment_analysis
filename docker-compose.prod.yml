@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./sentiment_tool
+      dockerfile: Dockerfile
+    environment:
+      - DJANGO_SETTINGS_MODULE=sentiment_tool.settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_SECURE_SSL_REDIRECT=1
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+    volumes:
+      - static_volume:/app/staticfiles
+    restart: always
+
+  frontend:
+    build:
+      context: ./sentiment-tool-frontend
+      dockerfile: Dockerfile
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - static_volume:/app/staticfiles
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+
+volumes:
+  static_volume:
