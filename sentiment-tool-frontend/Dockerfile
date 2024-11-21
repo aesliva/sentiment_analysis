@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
+RUN npm run build -- --configuration=production
 
 FROM nginx:alpine
 COPY --from=builder /app/dist/sentiment-tool-frontend/browser /usr/share/nginx/html
