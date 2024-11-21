@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { SentimentAnalyzerComponent } from './components/sentiment-analyzer/sentiment-analyzer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [SentimentAnalyzerComponent]
 })
 export class AppComponent {
-  title = 'sentiment-tool-frontend';
+  title = 'Sentiment Analysis Tool';
 }
