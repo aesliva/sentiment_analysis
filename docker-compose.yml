@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./sentiment_tool
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=0
+      - DJANGO_ALLOWED_HOSTS=localhost,backend
+    volumes:
+      - ./sentiment_tool:/app
+
+  frontend:
+    build: ./sentiment-tool-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
