@@ -1,17 +1,22 @@
 #!/bin/bash
-apt-get update
-apt-get install -y docker.io docker-compose git
+dnf update -y
+dnf install -y docker git
 
-# Add ubuntu user to docker group
-usermod -aG docker ubuntu
+# Start and enable Docker
+systemctl start docker
+systemctl enable docker
 
-# Install AWS CLI
-apt-get install -y awscli
+# Add ec2-user to docker group
+usermod -aG docker ec2-user
 
 # Clone application repository
-mkdir -p /home/ubuntu/sentiment-tool
-cd /home/ubuntu/sentiment-tool
+mkdir -p /home/ec2-user/sentiment-tool
+cd /home/ec2-user/sentiment-tool
 git clone https://github.com/aesliva/sentiment_analysis.git .
 
+# Install docker-compose
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
 # Start Docker services
-docker-compose -f docker-compose.prod.yml up -d 
+docker-compose -f docker-compose.prod.yml up -d

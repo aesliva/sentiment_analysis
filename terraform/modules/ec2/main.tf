@@ -1,5 +1,5 @@
 resource "aws_instance" "app_server" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
   subnet_id     = var.subnet_id
   key_name      = var.key_name
@@ -9,7 +9,7 @@ resource "aws_instance" "app_server" {
   user_data = templatefile("${path.module}/user_data.sh", {})
 
   root_block_device {
-    volume_size = 20
+    volume_size = 20 # arbitrary, dont think i need that much space
     volume_type = "gp3"
   }
 
@@ -19,13 +19,13 @@ resource "aws_instance" "app_server" {
   }
 }
 
-# Ubuntu AMI
-data "aws_ami" "ubuntu" {
+data "aws_ami" "amazon_linux" {
   most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-22.04-amd64-server-*"]
+    values = ["al2023-ami-2023*-x86_64"]
   }
 
   filter {
@@ -33,5 +33,9 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  # ebs to store docker images for persistence
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
 } 
