@@ -8,8 +8,8 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=sentiment_tool.settings
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_SECURE_SSL_REDIRECT=1
-      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_SECURE_SSL_REDIRECT=0
+      - DJANGO_ALLOWED_HOSTS=*
     volumes:
       - static_volume:/app/staticfiles
     restart: always
@@ -24,10 +24,8 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
       - static_volume:/app/staticfiles
     depends_on:
       - frontend
